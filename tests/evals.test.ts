@@ -249,6 +249,54 @@ describe("P7 deterministic graders", () => {
     ).toBe(false);
   });
 
+  it("penalizes conversation feedback that skips a required genuine error", () => {
+    const item = languageEvalCases.find(
+      (candidate) =>
+        candidate.id ===
+        "conversation-fr-cafe-error-a2-01"
+    );
+
+    const output =
+      languagesConversationOutputSchema.parse({
+        reply:
+          "Bien sûr. Le café coûte trois euros.",
+        supportHint: null,
+        feedback: {
+          summary: null,
+          errors: [],
+          suggestions: [
+            {
+              original: "Je veux un café.",
+              suggestion:
+                "Je voudrais un café, s'il vous plaît.",
+              reason:
+                "This sounds more polite."
+            }
+          ]
+        },
+        turnSignal: {
+          difficulty: "comfortable",
+          nextDifficulty: "same",
+          objective: "appears_achieved",
+          rationale:
+            "The learner ordered and asked the price."
+        }
+      });
+
+    const grade = gradeLanguageEvalCase(
+      item!,
+      output
+    );
+
+    expect(
+      grade.assertions.find(
+        (entry) =>
+          entry.id ===
+          "required-error-category:grammar"
+      )?.passed
+    ).toBe(false);
+  });
+
   it("grades bounded conversation behavior without inventing a score", () => {
     const item = languageEvalCases.find(
       (candidate) =>
@@ -269,7 +317,7 @@ describe("P7 deterministic graders", () => {
         turnSignal: {
           difficulty: "comfortable",
           nextDifficulty: "same",
-          objective: "progressing",
+          objective: "not_yet",
           rationale:
             "The learner asked where the water is but has not yet thanked the cashier."
         }
