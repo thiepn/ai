@@ -1,16 +1,11 @@
 import { z } from "zod";
 
-export const smokeInputSchema = z.object({
-  text: z.string().trim().min(1).max(2_000)
-}).strict();
-
 export const runEnvelopeSchema = z.object({
   capability: z.string().trim().min(1).max(128),
   input: z.unknown(),
   requestId: z.string().trim().min(1).max(128).optional()
 }).strict();
 
-export type SmokeInput = z.infer<typeof smokeInputSchema>;
 export type RunEnvelope = z.infer<typeof runEnvelopeSchema>;
 
 export type ErrorCode =
@@ -23,6 +18,7 @@ export type ErrorCode =
   | "BUDGET_EXCEEDED"
   | "MODEL_TIMEOUT"
   | "MODEL_UNAVAILABLE"
+  | "MODEL_REFUSED"
   | "INVALID_MODEL_OUTPUT"
   | "TOOL_REJECTED"
   | "INTERNAL_ERROR";
