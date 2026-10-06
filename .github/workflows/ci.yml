@@ -33,3 +33,9 @@ jobs:
 
       - name: Typecheck
         run: npm run typecheck
+
+      - name: Build client SDK
+        run: npm run build:client
+
+      - name: Verify client package
+        run: npm pack --dry-run --workspace=@thiepn/ai
