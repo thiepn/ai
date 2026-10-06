@@ -371,6 +371,9 @@ describe("languages.conversation", () => {
     expect(prompt.instructions).toContain(
       "not authoritative learner progress"
     );
+    expect(prompt.instructions).toContain(
+      "Never substitute a style suggestion for a genuine error"
+    );
 
     const payload = JSON.parse(prompt.input);
     expect(payload.supportMode).toBe("balanced");
