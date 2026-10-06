@@ -143,6 +143,65 @@ export const languagesGenerateExerciseCapability = defineCapability({
           input.explanationLanguage ?? "English"
       })
     };
+  },
+  validateOutput(input, output) {
+    const requestedCount = input.count ?? 5;
+
+    if (output.exercises.length !== requestedCount) {
+      return `Expected ${requestedCount} exercises but received ${output.exercises.length}.`;
+    }
+
+    const allowedSkills = new Set(
+      input.targets.skillIds
+    );
+    const allowedCategories = new Set(
+      input.targets.correctionCategories
+    );
+    const allowedTypes = input.exerciseTypes
+      ? new Set(input.exerciseTypes)
+      : undefined;
+
+    for (const exercise of output.exercises) {
+      if (
+        exercise.targetSkillIds.some(
+          (skillId) => !allowedSkills.has(skillId)
+        )
+      ) {
+        return `Exercise ${exercise.id} invented an unsupplied skill ID.`;
+      }
+
+      if (
+        exercise.categories.some(
+          (category) =>
+            !allowedCategories.has(category)
+        )
+      ) {
+        return `Exercise ${exercise.id} invented an unsupplied correction category.`;
+      }
+
+      if (
+        allowedTypes &&
+        !allowedTypes.has(exercise.type)
+      ) {
+        return `Exercise ${exercise.id} used an unrequested exercise type.`;
+      }
+
+      if (exercise.type === "multiple_choice") {
+        if (
+          !exercise.choices ||
+          exercise.choices.length < 2 ||
+          !exercise.choices.includes(
+            exercise.expectedAnswer
+          )
+        ) {
+          return `Exercise ${exercise.id} has an invalid multiple-choice answer key.`;
+        }
+      } else if (exercise.choices !== null) {
+        return `Exercise ${exercise.id} must not include choices for type ${exercise.type}.`;
+      }
+    }
+
+    return undefined;
   }
 });
 
