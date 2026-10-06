@@ -329,6 +329,22 @@ function gradeConversation(
     );
   }
 
+  if (
+    item.expect.objectiveAnyOf &&
+    item.expect.objectiveAnyOf.length > 0
+  ) {
+    assertions.push(
+      assertion(
+        "objective-signal",
+        item.expect.objectiveAnyOf.includes(
+          output.turnSignal.objective
+        ),
+        1,
+        `expected one of ${item.expect.objectiveAnyOf.join(", ")}, received ${output.turnSignal.objective}`
+      )
+    );
+  }
+
   const errorCategories = new Set(
     output.feedback.errors.map(
       (error) => error.category
