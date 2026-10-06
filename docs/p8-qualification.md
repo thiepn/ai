@@ -169,3 +169,83 @@ Until then the truthful state is:
 integration-ready
 live-certification-pending
 ```
+
+
+## Layer A qualification evidence — 2026-10-06
+
+The integration layer has been exercised across all three repositories.
+
+### thiepn/ai
+
+Latest P8 integration status/health head:
+
+```text
+504f8a3e4709a21375d73e54549f70484f78faf3
+```
+
+CI: PASS.
+
+This preserves the already-green P7 platform/eval suite and changes only the truthful phase/status reporting.
+
+### thiepn/languages
+
+Latest P8 qualification-document head:
+
+```text
+5b4c0691e82811ba00905e0887fcfb181a4e1bd3
+```
+
+CI: PASS.
+
+The browser-safe AI adapter and its tests also passed on their implementation heads.
+
+### thiepn/core
+
+P8 bridge head:
+
+```text
+e5f2917bb91cb63990143df6d64440ef22fc5a57
+```
+
+Before the repository reaches its database bootstrap, Core verification passes:
+
+```text
+Prettier
+ESLint
+strict TypeScript
+93/93 tests
+registry validation
+secret scan
+Cloudflare Worker production dry-run build
+```
+
+The six `apps/gateway/test/languages-ai.test.ts` cases pass.
+
+The full Core workflow then fails during `db:start` on the unrelated Recipe migration:
+
+```text
+20261006163029_recipe_p3_collection_lint_hardening.sql
+syntax error at or near "\\"
+```
+
+This is confirmed pre-existing: Core commit
+
+```text
+e9c859ec01f49eefb73e2a257640161c3d51a964
+```
+
+failed on the same Recipe migration before the P8 Languages AI bridge was added.
+
+P8 does not modify that unrelated Recipe migration.
+
+### Layer A result
+
+```text
+AI service integration code       PASS
+Languages browser adapter          PASS
+Core AI bridge code/tests/build    PASS
+Cross-boundary secret design       PASS
+Full Core repository DB bootstrap  BLOCKED by pre-existing Recipe migration
+```
+
+For P8 purposes, the Languages AI integration layer is code-qualified. This does not satisfy Layer B live certification.
