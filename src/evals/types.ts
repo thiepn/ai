@@ -119,6 +119,7 @@ export type LiveEvalCaseResult = {
   costUsd: number;
   assertions: EvalAssertion[];
   manualReview: readonly string[];
+  output?: unknown;
   error?: string;
 };
 
