@@ -86,6 +86,7 @@ export type ConversationEvalCase = EvalCaseBase & {
     maxErrors: number;
     supportHint: "null" | "present" | "any";
     objective?: "not_yet" | "progressing" | "appears_achieved";
+    requiredErrorCategories?: readonly CorrectionCategory[];
     replyMustContainAny?: readonly string[];
     replyMustNotContain?: readonly string[];
   };
