@@ -1,4 +1,7 @@
 import OpenAI from "openai";
+import { zodTextFormat } from "openai/helpers/zod";
+import { z } from "zod";
+import type { CapabilityReasoning } from "../core/capability.js";
 import { AiServiceError, normalizeUnknownError } from "../core/errors.js";
 
 export const LUNA_MODEL = "gpt-6-luna" as const;
@@ -6,12 +9,14 @@ export const LUNA_MODEL = "gpt-6-luna" as const;
 export type LunaRequest = {
   instructions: string;
   input: string;
-  reasoning?: "none" | "low" | "medium";
+  reasoning: CapabilityReasoning;
   maxOutputTokens: number;
+  outputName: string;
+  outputSchema: z.ZodType;
 };
 
 export type LunaResult = {
-  text: string;
+  output: unknown;
   responseId: string;
   model: typeof LUNA_MODEL;
 };
@@ -33,30 +38,64 @@ function getClient(): OpenAI {
   return client;
 }
 
+function findRefusal(response: {
+  output: Array<{
+    type?: string;
+    content?: Array<{ type?: string; refusal?: string }>;
+  }>;
+}): string | undefined {
+  for (const item of response.output) {
+    if (item.type !== "message" || !item.content) {
+      continue;
+    }
+
+    for (const content of item.content) {
+      if (content.type === "refusal" && content.refusal) {
+        return content.refusal;
+      }
+    }
+  }
+
+  return undefined;
+}
+
 export async function runLuna(request: LunaRequest): Promise<LunaResult> {
   try {
-    const response = await getClient().responses.create({
+    const response = await getClient().responses.parse({
       model: LUNA_MODEL,
       instructions: request.instructions,
       input: request.input,
       reasoning: {
-        effort: request.reasoning ?? "low"
+        effort: request.reasoning
       },
-      max_output_tokens: request.maxOutputTokens
+      max_output_tokens: request.maxOutputTokens,
+      text: {
+        format: zodTextFormat(request.outputSchema, request.outputName)
+      }
     });
 
-    const text = response.output_text?.trim();
+    const refusal = findRefusal(response);
 
-    if (!text) {
+    if (refusal) {
+      throw new AiServiceError(
+        "MODEL_REFUSED",
+        "The model refused the request.",
+        422
+      );
+    }
+
+    const parsed = request.outputSchema.safeParse(response.output_parsed);
+
+    if (!parsed.success) {
       throw new AiServiceError(
         "INVALID_MODEL_OUTPUT",
-        "The model returned no usable text.",
+        "The model output did not match the capability schema.",
         502
       );
     }
 
     return {
-      text,
+      output: parsed.data,
       responseId: response.id,
       model: LUNA_MODEL
     };
