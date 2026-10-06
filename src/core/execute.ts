@@ -9,22 +9,24 @@ import { createRequestId } from "./request-id.js";
 import { capabilityRegistry } from "../capabilities/index.js";
 import type { CapabilityRegistry } from "./registry.js";
 import { runLuna, type LunaRequest, type LunaResult } from "../providers/luna.js";
+import type { GuardrailManager } from "../guardrails/manager.js";
 
 export type ModelRunner = (request: LunaRequest) => Promise<LunaResult>;
+
+export type ExecuteContext = {
+  appId: string;
+};
 
 export type ExecuteDependencies = {
   runModel: ModelRunner;
   registry: CapabilityRegistry;
-};
-
-const defaultDependencies: ExecuteDependencies = {
-  runModel: runLuna,
-  registry: capabilityRegistry
+  guardrails: GuardrailManager;
 };
 
 export async function executeRun(
   rawRequest: unknown,
-  dependencies: ExecuteDependencies = defaultDependencies
+  context: ExecuteContext,
+  dependencies: ExecuteDependencies
 ): Promise<{
   status: number;
   body: RunSuccess<unknown> | RunFailure;
@@ -45,6 +47,14 @@ export async function executeRun(
       );
     }
 
+    if (!capability.allowedApps.includes(context.appId)) {
+      throw new AiServiceError(
+        "FORBIDDEN",
+        "Application is not allowed to use this capability.",
+        403
+      );
+    }
+
     const inputResult = capability.inputSchema.safeParse(envelope.input);
 
     if (!inputResult.success) {
@@ -58,16 +68,38 @@ export async function executeRun(
 
     const prompt = capability.buildPrompt(inputResult.data);
 
-    const modelResult = await dependencies.runModel({
-      instructions: prompt.instructions,
-      input: prompt.input,
-      reasoning: capability.reasoning,
-      maxOutputTokens: capability.limits.maxOutputTokens,
-      outputName: capability.outputName,
-      outputSchema: capability.outputSchema
-    });
+    const reservation =
+      await dependencies.guardrails.beforeModelCall({
+        appId: context.appId,
+        capability,
+        instructions: prompt.instructions,
+        input: prompt.input
+      });
 
-    const outputResult = capability.outputSchema.safeParse(modelResult.output);
+    let modelResult: LunaResult;
+
+    try {
+      modelResult = await dependencies.runModel({
+        instructions: prompt.instructions,
+        input: prompt.input,
+        reasoning: capability.reasoning,
+        maxOutputTokens: capability.limits.maxOutputTokens,
+        outputName: capability.outputName,
+        outputSchema: capability.outputSchema
+      });
+    } catch (error) {
+      await dependencies.guardrails.releaseReservation(reservation);
+      throw error;
+    }
+
+    await dependencies.guardrails.settleSuccess(
+      reservation,
+      modelResult.usage
+    );
+
+    const outputResult = capability.outputSchema.safeParse(
+      modelResult.output
+    );
 
     if (!outputResult.success) {
       throw new AiServiceError(
@@ -94,9 +126,12 @@ export async function executeRun(
   } catch (error) {
     const normalized =
       error instanceof ZodError
-        ? new AiServiceError("INVALID_INPUT", "Request did not match the execution contract.", 400, {
-            cause: error
-          })
+        ? new AiServiceError(
+            "INVALID_INPUT",
+            "Request did not match the execution contract.",
+            400,
+            { cause: error }
+          )
         : normalizeUnknownError(error);
 
     return {
@@ -105,3 +140,6 @@ export async function executeRun(
     };
   }
 }
+
+export const productionRegistry = capabilityRegistry;
+export const productionModelRunner = runLuna;
