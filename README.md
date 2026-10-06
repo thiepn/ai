@@ -6,9 +6,9 @@ Shared AI infrastructure for the Thiepn ecosystem.
 
 ## Current status
 
-**P6 implemented.** The Languages pilot now has correction, focused explanation, targeted exercise generation, and bounded adaptive conversation. Exercises consume explicit product-owned weakness targets; conversation carries explicit bounded history and returns advisory—not authoritative—difficulty/objective signals.
+**P7 implemented.** The Languages pilot now has a curated French/Japanese evaluation suite, deterministic graders, critical false-positive correction gates, explicit release thresholds, and a manual credential-gated live GPT-6 Luna evaluation workflow with latency/token/cost reporting.
 
-P0 architecture remains authoritative; P7 will evaluate the four Languages capabilities for quality and regression reliability.
+P0 architecture remains authoritative; P8 will move from laboratory evaluation to real-world Languages qualification and defect-only hardening.
 
 ## Core principles
 
@@ -69,6 +69,7 @@ Only after that pilot is stable should Recipe, StudyOS, Diet, Selah, or cross-ap
 - [P4 implementation](docs/p4-implementation.md)
 - [P5 implementation](docs/p5-implementation.md)
 - [P6 implementation](docs/p6-implementation.md)
+- [P7 implementation](docs/p7-implementation.md)
 - [Languages integration boundary](docs/languages-integration.md)
 - [Architecture decisions](docs/adr/)
 
