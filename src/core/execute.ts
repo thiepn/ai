@@ -1,6 +1,7 @@
 import { ZodError } from "zod";
 import {
-  runRequestSchema,
+  runEnvelopeSchema,
+  smokeInputSchema,
   type RunFailure,
   type RunSuccess
 } from "./contracts.js";
@@ -33,10 +34,10 @@ export async function executeRun(
   let requestId = createRequestId();
 
   try {
-    const request = runRequestSchema.parse(rawRequest);
-    requestId = createRequestId(request.requestId);
+    const envelope = runEnvelopeSchema.parse(rawRequest);
+    requestId = createRequestId(envelope.requestId);
 
-    if (request.capability !== CORE_SMOKE_CAPABILITY.id) {
+    if (envelope.capability !== CORE_SMOKE_CAPABILITY.id) {
       throw new AiServiceError(
         "UNKNOWN_CAPABILITY",
         "Unknown capability.",
@@ -44,7 +45,8 @@ export async function executeRun(
       );
     }
 
-    const data = await runCoreSmoke(request.input, dependencies.runModel);
+    const input = smokeInputSchema.parse(envelope.input);
+    const data = await runCoreSmoke(input, dependencies.runModel);
 
     return {
       status: 200,
