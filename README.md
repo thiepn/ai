@@ -6,9 +6,9 @@ Shared AI infrastructure for the Thiepn ecosystem.
 
 ## Current status
 
-**P2 implemented.** The repository now contains a registry-driven capability platform with per-capability input/output schemas, strict GPT-6 Luna structured outputs, normalized execution, and a gated internal proving capability.
+**P3 implemented.** The service now has signed server-to-server application identities, replay protection, enforced capability permissions, persistent rate limits, token/cost accounting, and an ecosystem-wide monthly hard budget around GPT-6 Luna execution.
 
-P0 architecture remains authoritative; P3 adds authenticated caller identity, permission enforcement, and budgets.
+P0 architecture remains authoritative; P4 will package request signing and typed invocation into the shared client SDK.
 
 ## Core principles
 
@@ -65,6 +65,7 @@ Only after that pilot is stable should Recipe, StudyOS, Diet, Selah, or cross-ap
 - [P0 acceptance criteria](docs/p0-acceptance.md)
 - [P1 implementation](docs/p1-implementation.md)
 - [P2 implementation](docs/p2-implementation.md)
+- [P3 implementation](docs/p3-implementation.md)
 - [Architecture decisions](docs/adr/)
 
 ## Phase roadmap
