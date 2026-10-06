@@ -317,7 +317,7 @@ describe("P7 deterministic graders", () => {
         turnSignal: {
           difficulty: "comfortable",
           nextDifficulty: "same",
-          objective: "progressing",
+          objective: "not_yet",
           rationale:
             "The learner asked where the water is but has not yet thanked the cashier."
         }
@@ -325,6 +325,21 @@ describe("P7 deterministic graders", () => {
 
     expect(
       gradeLanguageEvalCase(item!, output).score
+    ).toBe(1);
+
+    const progressing = {
+      ...output,
+      turnSignal: {
+        ...output.turnSignal,
+        objective: "progressing" as const
+      }
+    };
+
+    expect(
+      gradeLanguageEvalCase(
+        item!,
+        progressing
+      ).score
     ).toBe(1);
   });
 });
