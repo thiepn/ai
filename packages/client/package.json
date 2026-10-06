@@ -1,0 +1,25 @@
+{
+  "name": "@thiepn/ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Server-side client SDK for the Thiepn AI service",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.build.json --noEmit"
+  }
+}
