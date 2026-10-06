@@ -21,11 +21,17 @@ import { createThiepnAIFromEnv } from "@thiepn/ai";
 
 const ai = createThiepnAIFromEnv();
 
-const result = await ai.run("core.smoke", {
-  text: "Confirm the service is reachable."
+const result = await ai.run("languages.correct", {
+  languageId: "french",
+  text: "Hier je vais au magasin.",
+  proficiency: {
+    framework: "cefr",
+    level: "A2"
+  }
 });
 
-console.log(result.data.reply);
+console.log(result.data.correctedText);
+console.log(result.data.errors);
 ```
 
 Normal application code never handles:
@@ -65,4 +71,4 @@ try {
 
 The SDK exposes a central `ThiepnAICapabilityMap`.
 
-P4 contains only the internal `core.smoke` capability. Product capability types are added when those capabilities become real; P5 will add the first Languages contracts.
+The map now includes the internal `core.smoke` capability plus `languages.correct` and `languages.explain`. The SDK therefore type-checks both the request payload and returned capability data.
