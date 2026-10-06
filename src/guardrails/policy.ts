@@ -33,9 +33,15 @@ export function getAppPolicy(appId: string): AppPolicy {
   }
 
   const overrides = policyOverridesSchema.parse(JSON.parse(raw));
+  const override = overrides[appId];
+
   return {
-    ...defaults,
-    ...overrides[appId]
+    requestsPerMinute:
+      override?.requestsPerMinute ??
+      defaults.requestsPerMinute,
+    requestsPerDay:
+      override?.requestsPerDay ??
+      defaults.requestsPerDay
   };
 }
 
