@@ -107,7 +107,7 @@ describe("executeRun", () => {
 
     const result = await executeRun(
       {
-        capability: "languages.correct",
+        capability: "future.capability",
         input: { text: "Hello" }
       },
       { appId: "internal" },
