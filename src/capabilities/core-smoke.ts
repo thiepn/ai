@@ -9,7 +9,6 @@ export const CORE_SMOKE_CAPABILITY = {
 
 export type CoreSmokeResult = {
   reply: string;
-  providerResponseId: string;
 };
 
 export async function runCoreSmoke(
@@ -28,7 +27,6 @@ export async function runCoreSmoke(
   });
 
   return {
-    reply: result.text,
-    providerResponseId: result.responseId
+    reply: result.text
   };
 }
