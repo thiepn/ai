@@ -1,3 +1,53 @@
+export type LanguageProficiencyFramework =
+  | "cefr"
+  | "jlpt"
+  | "custom";
+
+export type LanguageProficiency = {
+  framework: LanguageProficiencyFramework;
+  level: string;
+};
+
+export type LanguageCorrectionCategory =
+  | "grammar"
+  | "tense_aspect"
+  | "agreement"
+  | "conjugation"
+  | "word_order"
+  | "article_determiner"
+  | "preposition"
+  | "pronoun"
+  | "vocabulary"
+  | "collocation"
+  | "idiom_naturalness"
+  | "spelling"
+  | "punctuation"
+  | "register"
+  | "script"
+  | "other";
+
+export type LanguageCorrectionError = {
+  id: string;
+  category: LanguageCorrectionCategory;
+  severity: "minor" | "major";
+  original: string;
+  correction: string;
+  explanation: string;
+  confidence: "high" | "medium" | "low";
+};
+
+export type LanguageNaturalnessSuggestion = {
+  original: string;
+  suggestion: string;
+  reason: string;
+};
+
+export type LanguageExplanationExample = {
+  target: string;
+  meaning: string | null;
+  note: string | null;
+};
+
 export interface ThiepnAICapabilityMap {
   "core.smoke": {
     input: {
@@ -5,6 +55,56 @@ export interface ThiepnAICapabilityMap {
     };
     output: {
       reply: string;
+    };
+  };
+
+  "languages.correct": {
+    input: {
+      languageId: string;
+      text: string;
+      proficiency: LanguageProficiency;
+      explanationLanguage?: string;
+      focus?:
+        | "accuracy"
+        | "accuracy_and_naturalness";
+      context?: string;
+    };
+    output: {
+      status: "correct" | "needs_correction";
+      correctedText: string;
+      summary: string;
+      errors: LanguageCorrectionError[];
+      suggestions: LanguageNaturalnessSuggestion[];
+      naturalVersion: string | null;
+    };
+  };
+
+  "languages.explain": {
+    input: {
+      languageId: string;
+      proficiency: LanguageProficiency;
+      sourceText: string;
+      correctedText: string;
+      focus: {
+        type: "error" | "suggestion" | "general";
+        original: string;
+        correction: string;
+        category: LanguageCorrectionCategory | null;
+      };
+      explanationLanguage?: string;
+      question?: string;
+    };
+    output: {
+      headline: string;
+      explanation: string;
+      rule: string;
+      levelFit:
+        | "core"
+        | "useful_next_step"
+        | "advanced_detail";
+      examples: LanguageExplanationExample[];
+      memoryTip: string | null;
+      nuance: string | null;
     };
   };
 }
