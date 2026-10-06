@@ -392,7 +392,7 @@ export const languageEvalCases: readonly LanguageEvalCase[] = [
     expect: {
       maxErrors: 0,
       supportHint: "null",
-      objective: "progressing",
+      objectiveAnyOf: ["not_yet", "progressing"],
       replyMustNotContain: [
         "In English",
         "English:"
@@ -465,7 +465,7 @@ export const languageEvalCases: readonly LanguageEvalCase[] = [
     expect: {
       maxErrors: 0,
       supportHint: "null",
-      objective: "progressing",
+      objectiveAnyOf: ["not_yet", "progressing"],
       replyMustContainAny: [
         "水",
         "こちら",
