@@ -48,6 +48,32 @@ export type LanguageExplanationExample = {
   note: string | null;
 };
 
+export type LanguageExerciseType =
+  | "fill_blank"
+  | "rewrite"
+  | "translation"
+  | "multiple_choice"
+  | "short_response"
+  | "sentence_build";
+
+export type LanguageGeneratedExercise = {
+  id: string;
+  type: LanguageExerciseType;
+  prompt: string;
+  choices: string[] | null;
+  expectedAnswer: string;
+  acceptedAnswers: string[];
+  explanation: string;
+  targetSkillIds: string[];
+  categories: LanguageCorrectionCategory[];
+  difficulty: "on_level" | "stretch";
+};
+
+export type LanguageConversationHistoryMessage = {
+  role: "learner" | "partner";
+  text: string;
+};
+
 export interface ThiepnAICapabilityMap {
   "core.smoke": {
     input: {
@@ -105,6 +131,73 @@ export interface ThiepnAICapabilityMap {
       examples: LanguageExplanationExample[];
       memoryTip: string | null;
       nuance: string | null;
+    };
+  };
+
+  "languages.generateExercise": {
+    input: {
+      languageId: string;
+      proficiency: LanguageProficiency;
+      targets: {
+        skillIds: string[];
+        correctionCategories: LanguageCorrectionCategory[];
+        learnerNotes?: string[];
+      };
+      count?: number;
+      exerciseTypes?: LanguageExerciseType[];
+      topic?: string;
+      explanationLanguage?: string;
+    };
+    output: {
+      title: string;
+      learnerInstructions: string;
+      exercises: LanguageGeneratedExercise[];
+    };
+  };
+
+  "languages.conversation": {
+    input: {
+      languageId: string;
+      proficiency: LanguageProficiency;
+      scenario: {
+        title: string;
+        setting: string;
+        learnerRole: string;
+        partnerRole: string;
+        objective: string;
+      };
+      history: LanguageConversationHistoryMessage[];
+      learnerMessage: string;
+      targets?: {
+        skillIds: string[];
+        correctionCategories: LanguageCorrectionCategory[];
+        vocabulary: string[];
+      };
+      supportMode?: "immersion" | "balanced" | "supported";
+      correctionMode?: "minimal" | "balanced" | "coach";
+      explanationLanguage?: string;
+    };
+    output: {
+      reply: string;
+      supportHint: string | null;
+      feedback: {
+        summary: string | null;
+        errors: LanguageCorrectionError[];
+        suggestions: LanguageNaturalnessSuggestion[];
+      };
+      turnSignal: {
+        difficulty:
+          | "comfortable"
+          | "productive_struggle"
+          | "too_hard"
+          | "unclear";
+        nextDifficulty: "easier" | "same" | "harder";
+        objective:
+          | "not_yet"
+          | "progressing"
+          | "appears_achieved";
+        rationale: string;
+      };
     };
   };
 }
