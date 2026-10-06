@@ -6,9 +6,9 @@ Shared AI infrastructure for the Thiepn ecosystem.
 
 ## Current status
 
-**P7 implemented.** The Languages pilot now has a curated French/Japanese evaluation suite, deterministic graders, critical false-positive correction gates, explicit release thresholds, and a manual credential-gated live GPT-6 Luna evaluation workflow with latency/token/cost reporting.
+**P8 integration implemented; live certification pending.** The Languages pilot is wired through the authenticated THIEPN Core boundary with a browser-safe Languages client and explicit production qualification gates. Live GPT-6 Luna certification still requires production credentials/deployment, the full P7 live eval, and a signed-in human study session.
 
-P0 architecture remains authoritative; P8 will move from laboratory evaluation to real-world Languages qualification and defect-only hardening.
+P0 architecture remains authoritative. Until those live gates pass, the truthful state is `integration-ready`, not `production-certified`.
 
 ## Core principles
 
@@ -70,6 +70,7 @@ Only after that pilot is stable should Recipe, StudyOS, Diet, Selah, or cross-ap
 - [P5 implementation](docs/p5-implementation.md)
 - [P6 implementation](docs/p6-implementation.md)
 - [P7 implementation](docs/p7-implementation.md)
+- [P8 qualification](docs/p8-qualification.md)
 - [Languages integration boundary](docs/languages-integration.md)
 - [Architecture decisions](docs/adr/)
 
