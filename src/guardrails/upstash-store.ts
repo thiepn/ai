@@ -51,17 +51,21 @@ export class UpstashGuardrailStore implements GuardrailStore {
   constructor(private readonly redis: Redis) {}
 
   static fromEnv(): UpstashGuardrailStore {
-    if (
-      !process.env.UPSTASH_REDIS_REST_URL ||
-      !process.env.UPSTASH_REDIS_REST_TOKEN
-    ) {
+    const url =
+      process.env.UPSTASH_REDIS_REST_URL ??
+      process.env.KV_REST_API_URL;
+    const token =
+      process.env.UPSTASH_REDIS_REST_TOKEN ??
+      process.env.KV_REST_API_TOKEN;
+
+    if (!url || !token) {
       throw new Error("Persistent guardrail store is not configured.");
     }
 
     return new UpstashGuardrailStore(
       new Redis({
-        url: process.env.UPSTASH_REDIS_REST_URL,
-        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+        url,
+        token,
         enableTelemetry: false,
         signal: () => AbortSignal.timeout(2_000)
       })
