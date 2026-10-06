@@ -4,7 +4,7 @@ import type { ModelRunner } from "../src/core/execute.js";
 
 describe("executeRun", () => {
   it("executes core.smoke through the injected model runner", async () => {
-    const runModel: ModelRunner = vi.fn(async () => ({
+    const runModel = vi.fn<ModelRunner>(async () => ({
       text: "Smoke test passed.",
       responseId: "resp_test",
       model: "gpt-6-luna"
@@ -33,7 +33,7 @@ describe("executeRun", () => {
   });
 
   it("rejects an unknown capability without calling the model", async () => {
-    const runModel: ModelRunner = vi.fn();
+    const runModel = vi.fn<ModelRunner>();
 
     const result = await executeRun(
       {
@@ -53,7 +53,7 @@ describe("executeRun", () => {
   });
 
   it("normalizes invalid capability input without calling the model", async () => {
-    const runModel: ModelRunner = vi.fn();
+    const runModel = vi.fn<ModelRunner>();
 
     const result = await executeRun(
       {
@@ -73,7 +73,7 @@ describe("executeRun", () => {
   });
 
   it("normalizes provider rate limits", async () => {
-    const runModel: ModelRunner = vi.fn(async () => {
+    const runModel = vi.fn<ModelRunner>(async () => {
       throw { status: 429 };
     });
 
