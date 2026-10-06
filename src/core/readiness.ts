@@ -1,3 +1,4 @@
+import { getRuntimeGuardrailStore } from "../guardrails/runtime.js";
 import { loadAppSecrets } from "../security/app-auth.js";
 
 export type RuntimeReadiness = {
@@ -36,6 +37,39 @@ export function getRuntimeReadiness(
       provider,
       guardrails,
       appAuth
+    }
+  };
+}
+
+export async function checkRuntimeReadiness(
+  env: NodeJS.ProcessEnv = process.env,
+  probeGuardrails: () => Promise<unknown> = () =>
+    getRuntimeGuardrailStore().getNumber(
+      "health:readiness-probe"
+    )
+): Promise<RuntimeReadiness> {
+  const configured = getRuntimeReadiness(env);
+
+  if (!configured.dependencies.guardrails) {
+    return configured;
+  }
+
+  let guardrails = false;
+  try {
+    await probeGuardrails();
+    guardrails = true;
+  } catch {
+    guardrails = false;
+  }
+
+  return {
+    ready:
+      configured.dependencies.provider &&
+      guardrails &&
+      configured.dependencies.appAuth,
+    dependencies: {
+      ...configured.dependencies,
+      guardrails
     }
   };
 }
