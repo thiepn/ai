@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { getRuntimeReadiness } from "../../src/core/readiness.js";
 import { LUNA_MODEL } from "../../src/providers/luna.js";
 
 export default function handler(
@@ -16,10 +17,14 @@ export default function handler(
     return;
   }
 
-  response.status(200).json({
-    status: "ok",
+  const readiness = getRuntimeReadiness();
+
+  response.status(readiness.ready ? 200 : 503).json({
+    status: readiness.ready ? "ok" : "degraded",
+    ready: readiness.ready,
     service: "thiepn/ai",
     phase: "P8-integration",
-    model: LUNA_MODEL
+    model: LUNA_MODEL,
+    dependencies: readiness.dependencies
   });
 }
