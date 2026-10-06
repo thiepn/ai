@@ -329,6 +329,23 @@ function gradeConversation(
     );
   }
 
+  const errorCategories = new Set(
+    output.feedback.errors.map(
+      (error) => error.category
+    )
+  );
+
+  for (const category of
+    item.expect.requiredErrorCategories ?? []) {
+    assertions.push(
+      assertion(
+        `required-error-category:${category}`,
+        errorCategories.has(category),
+        3
+      )
+    );
+  }
+
   const reply = output.reply.toLocaleLowerCase();
 
   if (
