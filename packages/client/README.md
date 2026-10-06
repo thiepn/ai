@@ -71,4 +71,4 @@ try {
 
 The SDK exposes a central `ThiepnAICapabilityMap`.
 
-The map now includes the internal `core.smoke` capability plus `languages.correct` and `languages.explain`. The SDK therefore type-checks both the request payload and returned capability data.
+The map now includes the internal `core.smoke` capability plus `languages.correct`, `languages.explain`, `languages.generateExercise`, and `languages.conversation`. The SDK therefore type-checks correction, explanation, generated-practice, and conversation-turn requests and results.
