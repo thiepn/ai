@@ -292,7 +292,7 @@ describe("P7 deterministic graders", () => {
       grade.assertions.find(
         (entry) =>
           entry.id ===
-          "required-error-category:grammar"
+          "required-error-category:word_order"
       )?.passed
     ).toBe(false);
   });
@@ -317,7 +317,7 @@ describe("P7 deterministic graders", () => {
         turnSignal: {
           difficulty: "comfortable",
           nextDifficulty: "same",
-          objective: "not_yet",
+          objective: "progressing",
           rationale:
             "The learner asked where the water is but has not yet thanked the cashier."
         }
