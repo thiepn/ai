@@ -18,7 +18,10 @@ export const coreSmokeCapability = defineCapability({
   outputName: "core_smoke",
   reasoning: "low",
   limits: {
-    maxOutputTokens: 160
+    maxInputTokens: 4_096,
+    maxOutputTokens: 160,
+    requestsPerMinute: 10,
+    requestsPerDay: 100
   },
   allowedApps: ["internal"],
   buildPrompt(input) {
