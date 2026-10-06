@@ -50,8 +50,7 @@ Example success shape:
 {
   "ok": true,
   "data": {
-    "reply": "...",
-    "providerResponseId": "resp_..."
+    "reply": "..."
   },
   "meta": {
     "capability": "core.smoke",
@@ -126,6 +125,8 @@ Unit tests cover:
 - provider rate-limit normalization
 
 A live provider call is intentionally not part of automated tests because it requires credentials and incurs external cost.
+
+Provider response identifiers remain internal and are not part of the application-facing capability result.
 
 ## P1 acceptance
 
