@@ -1,11 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import { executeRun } from "../src/core/execute.js";
 import type { ModelRunner } from "../src/core/execute.js";
+import { capabilityRegistry } from "../src/capabilities/index.js";
 
 describe("executeRun", () => {
-  it("executes core.smoke through the injected model runner", async () => {
+  it("executes a registered capability through the model runner", async () => {
     const runModel = vi.fn<ModelRunner>(async () => ({
-      text: "Smoke test passed.",
+      output: { reply: "Smoke test passed." },
       responseId: "resp_test",
       model: "gpt-6-luna"
     }));
@@ -16,20 +17,26 @@ describe("executeRun", () => {
         input: { text: "Say hello" },
         requestId: "req_test"
       },
-      { runModel }
+      { runModel, registry: capabilityRegistry }
     );
 
     expect(result.status).toBe(200);
     expect(result.body.ok).toBe(true);
 
     if (result.body.ok) {
-      expect(result.body.data.reply).toBe("Smoke test passed.");
+      expect(result.body.data).toEqual({ reply: "Smoke test passed." });
       expect(result.body.meta.model).toBe("gpt-6-luna");
       expect(result.body.meta.requestId).toBe("req_test");
-      expect("providerResponseId" in result.body.data).toBe(false);
     }
 
     expect(runModel).toHaveBeenCalledTimes(1);
+    expect(runModel).toHaveBeenCalledWith(
+      expect.objectContaining({
+        reasoning: "low",
+        maxOutputTokens: 160,
+        outputName: "core_smoke"
+      })
+    );
   });
 
   it("rejects an unknown capability without calling the model", async () => {
@@ -40,7 +47,7 @@ describe("executeRun", () => {
         capability: "languages.correct",
         input: { text: "Hello" }
       },
-      { runModel }
+      { runModel, registry: capabilityRegistry }
     );
 
     expect(result.status).toBe(404);
@@ -52,7 +59,7 @@ describe("executeRun", () => {
     }
   });
 
-  it("normalizes invalid capability input without calling the model", async () => {
+  it("rejects invalid capability input without calling the model", async () => {
     const runModel = vi.fn<ModelRunner>();
 
     const result = await executeRun(
@@ -60,7 +67,7 @@ describe("executeRun", () => {
         capability: "core.smoke",
         input: { text: "" }
       },
-      { runModel }
+      { runModel, registry: capabilityRegistry }
     );
 
     expect(result.status).toBe(400);
@@ -69,6 +76,29 @@ describe("executeRun", () => {
 
     if (!result.body.ok) {
       expect(result.body.error.code).toBe("INVALID_INPUT");
+    }
+  });
+
+  it("rejects model output that violates the capability schema", async () => {
+    const runModel = vi.fn<ModelRunner>(async () => ({
+      output: { wrong: true },
+      responseId: "resp_bad",
+      model: "gpt-6-luna"
+    }));
+
+    const result = await executeRun(
+      {
+        capability: "core.smoke",
+        input: { text: "Hello" }
+      },
+      { runModel, registry: capabilityRegistry }
+    );
+
+    expect(result.status).toBe(502);
+    expect(result.body.ok).toBe(false);
+
+    if (!result.body.ok) {
+      expect(result.body.error.code).toBe("INVALID_MODEL_OUTPUT");
     }
   });
 
@@ -82,7 +112,7 @@ describe("executeRun", () => {
         capability: "core.smoke",
         input: { text: "Hello" }
       },
-      { runModel }
+      { runModel, registry: capabilityRegistry }
     );
 
     expect(result.status).toBe(503);
