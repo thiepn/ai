@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { runEnvelopeSchema, smokeInputSchema } from "../src/core/contracts.js";
+import { runEnvelopeSchema } from "../src/core/contracts.js";
+import { coreSmokeInputSchema } from "../src/capabilities/core-smoke.js";
 
-describe("P1 request contracts", () => {
-  it("accepts a valid execution envelope", () => {
+describe("P2 request contracts", () => {
+  it("accepts a generic execution envelope", () => {
     const parsed = runEnvelopeSchema.parse({
       capability: "core.smoke",
       input: { text: "Hello" },
@@ -13,13 +14,19 @@ describe("P1 request contracts", () => {
     expect(parsed.requestId).toBe("test-1");
   });
 
-  it("keeps capability-specific input validation separate", () => {
+  it("does not hard-code capability names into the envelope", () => {
     const envelope = runEnvelopeSchema.parse({
       capability: "future.capability",
       input: { any: "shape" }
     });
 
     expect(envelope.capability).toBe("future.capability");
-    expect(() => smokeInputSchema.parse({ text: "   " })).toThrow();
+  });
+
+  it("keeps capability-specific validation with the capability", () => {
+    expect(() => coreSmokeInputSchema.parse({ text: "   " })).toThrow();
+    expect(coreSmokeInputSchema.parse({ text: "Hello" })).toEqual({
+      text: "Hello"
+    });
   });
 });
