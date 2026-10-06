@@ -21,14 +21,14 @@ function manager(args?: {
         args?.requestsPerMinute ?? 100,
       requestsPerDay: 1_000
     }),
-    budgetPolicy: () => ({
-      warningUsd: 0,
-      softUsd: Math.max(
-        0.000001,
-        (args?.hardUsd ?? 10) / 2
-      ),
-      hardUsd: args?.hardUsd ?? 10
-    })
+    budgetPolicy: () => {
+      const hardUsd = args?.hardUsd ?? 10;
+      return {
+        warningUsd: hardUsd * 0.5,
+        softUsd: hardUsd * 0.75,
+        hardUsd
+      };
+    }
   });
 
   return { store, guardrails };
