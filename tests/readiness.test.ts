@@ -16,6 +16,20 @@ describe("runtime readiness", () => {
     });
   });
 
+  it("accepts Vercel Upstash KV aliases", () => {
+    const result = getRuntimeReadiness({
+      OPENAI_API_KEY: "configured",
+      KV_REST_API_URL: "https://redis.example",
+      KV_REST_API_TOKEN: "configured",
+      THIEPN_AI_APP_SECRETS_JSON: JSON.stringify({
+        languages: appSecret
+      })
+    });
+
+    expect(result.ready).toBe(true);
+    expect(result.dependencies.guardrails).toBe(true);
+  });
+
   it("requires a valid languages app identity", () => {
     const result = getRuntimeReadiness({
       OPENAI_API_KEY: "configured",
