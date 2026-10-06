@@ -1,11 +1,11 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getRuntimeReadiness } from "../../src/core/readiness.js";
+import { checkRuntimeReadiness } from "../../src/core/readiness.js";
 import { LUNA_MODEL } from "../../src/providers/luna.js";
 
-export default function handler(
+export default async function handler(
   request: VercelRequest,
   response: VercelResponse
-): void {
+): Promise<void> {
   response.setHeader("Cache-Control", "no-store");
 
   if (request.method !== "GET") {
@@ -17,7 +17,8 @@ export default function handler(
     return;
   }
 
-  const readiness = getRuntimeReadiness();
+  const readiness =
+    await checkRuntimeReadiness();
 
   response.status(readiness.ready ? 200 : 503).json({
     status: readiness.ready ? "ok" : "degraded",
