@@ -26,12 +26,33 @@ describe("executeRun", () => {
       expect(result.body.data.reply).toBe("Smoke test passed.");
       expect(result.body.meta.model).toBe("gpt-6-luna");
       expect(result.body.meta.requestId).toBe("req_test");
+      expect("providerResponseId" in result.body.data).toBe(false);
     }
 
     expect(runModel).toHaveBeenCalledTimes(1);
   });
 
-  it("normalizes invalid input without calling the model", async () => {
+  it("rejects an unknown capability without calling the model", async () => {
+    const runModel: ModelRunner = vi.fn();
+
+    const result = await executeRun(
+      {
+        capability: "languages.correct",
+        input: { text: "Hello" }
+      },
+      { runModel }
+    );
+
+    expect(result.status).toBe(404);
+    expect(result.body.ok).toBe(false);
+    expect(runModel).not.toHaveBeenCalled();
+
+    if (!result.body.ok) {
+      expect(result.body.error.code).toBe("UNKNOWN_CAPABILITY");
+    }
+  });
+
+  it("normalizes invalid capability input without calling the model", async () => {
     const runModel: ModelRunner = vi.fn();
 
     const result = await executeRun(
@@ -45,6 +66,10 @@ describe("executeRun", () => {
     expect(result.status).toBe(400);
     expect(result.body.ok).toBe(false);
     expect(runModel).not.toHaveBeenCalled();
+
+    if (!result.body.ok) {
+      expect(result.body.error.code).toBe("INVALID_INPUT");
+    }
   });
 
   it("normalizes provider rate limits", async () => {
