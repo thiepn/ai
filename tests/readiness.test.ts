@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { getRuntimeReadiness } from "../src/core/readiness.js";
+import {
+  checkRuntimeReadiness,
+  getRuntimeReadiness
+} from "../src/core/readiness.js";
 
 const appSecret =
   "0123456789abcdef0123456789abcdef";
@@ -25,6 +28,42 @@ describe("runtime readiness", () => {
         languages: appSecret
       })
     });
+
+    expect(result.ready).toBe(true);
+    expect(result.dependencies.guardrails).toBe(true);
+  });
+
+  it("degrades when configured Redis is unreachable", async () => {
+    const result = await checkRuntimeReadiness(
+      {
+        OPENAI_API_KEY: "configured",
+        KV_REST_API_URL: "https://redis.example",
+        KV_REST_API_TOKEN: "configured",
+        THIEPN_AI_APP_SECRETS_JSON: JSON.stringify({
+          languages: appSecret
+        })
+      },
+      async () => {
+        throw new Error("redis unavailable");
+      }
+    );
+
+    expect(result.ready).toBe(false);
+    expect(result.dependencies.guardrails).toBe(false);
+  });
+
+  it("confirms guardrails only after a successful Redis probe", async () => {
+    const result = await checkRuntimeReadiness(
+      {
+        OPENAI_API_KEY: "configured",
+        KV_REST_API_URL: "https://redis.example",
+        KV_REST_API_TOKEN: "configured",
+        THIEPN_AI_APP_SECRETS_JSON: JSON.stringify({
+          languages: appSecret
+        })
+      },
+      async () => 0
+    );
 
     expect(result.ready).toBe(true);
     expect(result.dependencies.guardrails).toBe(true);
