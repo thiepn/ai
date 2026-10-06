@@ -110,6 +110,20 @@ export async function executeRun(
       );
     }
 
+    const semanticIssue = capability.validateOutput?.(
+      inputResult.data,
+      outputResult.data
+    );
+
+    if (semanticIssue) {
+      throw new AiServiceError(
+        "INVALID_MODEL_OUTPUT",
+        "The model output violated the capability contract.",
+        502,
+        { cause: new Error(semanticIssue) }
+      );
+    }
+
     return {
       status: 200,
       body: {
