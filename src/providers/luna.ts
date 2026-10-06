@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 import { z } from "zod";
+import type { LunaUsage } from "../billing/luna-pricing.js";
 import type { CapabilityReasoning } from "../core/capability.js";
 import { AiServiceError, normalizeUnknownError } from "../core/errors.js";
 
@@ -19,6 +20,7 @@ export type LunaResult = {
   output: unknown;
   responseId: string;
   model: typeof LUNA_MODEL;
+  usage: LunaUsage;
 };
 
 let client: OpenAI | undefined;
@@ -94,10 +96,28 @@ export async function runLuna(request: LunaRequest): Promise<LunaResult> {
       );
     }
 
+    const usage = response.usage;
+
+    if (!usage) {
+      throw new AiServiceError(
+        "INTERNAL_ERROR",
+        "The model provider did not return usage accounting.",
+        502
+      );
+    }
+
     return {
       output: parsed.data,
       responseId: response.id,
-      model: LUNA_MODEL
+      model: LUNA_MODEL,
+      usage: {
+        inputTokens: usage.input_tokens,
+        cachedInputTokens:
+          usage.input_tokens_details?.cached_tokens ?? 0,
+        cacheWriteTokens:
+          usage.input_tokens_details?.cache_write_tokens ?? 0,
+        outputTokens: usage.output_tokens
+      }
     };
   } catch (error) {
     throw normalizeUnknownError(error);
