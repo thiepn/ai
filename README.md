@@ -4,9 +4,11 @@ Shared AI infrastructure for the Thiepn ecosystem.
 
 `thiepn/ai` is not a general-purpose chatbot and not a mandatory dependency for every Thiepn app. It is a small internal service that exposes narrowly defined AI capabilities to applications that genuinely benefit from language-model intelligence.
 
-## P0 status
+## Current status
 
-P0 establishes architecture, boundaries, contracts, and acceptance criteria. No production model calls are implemented yet.
+**P1 implemented.** The repository now contains the minimal GPT-6 Luna execution service, a gated internal smoke capability, stable v1 routes, normalized errors, and unit-testable core execution.
+
+P0 architecture remains authoritative; P2 will replace the temporary smoke dispatch with the real capability registry.
 
 ## Core principles
 
@@ -61,6 +63,7 @@ Only after that pilot is stable should Recipe, StudyOS, Diet, Selah, or cross-ap
 - [Security boundaries](docs/security-boundaries.md)
 - [Data and context rules](docs/data-context.md)
 - [P0 acceptance criteria](docs/p0-acceptance.md)
+- [P1 implementation](docs/p1-implementation.md)
 - [Architecture decisions](docs/adr/)
 
 ## Phase roadmap
