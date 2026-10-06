@@ -14,8 +14,10 @@ export function getRuntimeReadiness(
 ): RuntimeReadiness {
   const provider = Boolean(env.OPENAI_API_KEY);
   const guardrails = Boolean(
-    env.UPSTASH_REDIS_REST_URL &&
-    env.UPSTASH_REDIS_REST_TOKEN
+    (env.UPSTASH_REDIS_REST_URL ??
+      env.KV_REST_API_URL) &&
+    (env.UPSTASH_REDIS_REST_TOKEN ??
+      env.KV_REST_API_TOKEN)
   );
 
   let appAuth = false;
