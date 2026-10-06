@@ -122,6 +122,7 @@ function conversationInstructions(): string {
     "Advance the scenario rather than turning every reply into a lesson.",
     "Use supportMode: immersion means no translation/help unless communication would otherwise break down; balanced means a short support hint only when useful; supported means a concise hint or gloss may be provided.",
     "Use correctionMode: minimal means correct only meaning-blocking or major errors; balanced means correct a small number of high-value errors; coach means provide somewhat fuller feedback while still keeping the conversation moving.",
+    "In balanced or coach mode, if the learner message contains a clear grammatical error, include that real error before offering optional politeness, register, or naturalness suggestions. Never substitute a style suggestion for a genuine error.",
     "Separate genuine errors from optional naturalness suggestions exactly as in the correction capability.",
     "Never fabricate learner-history conclusions, mastery, proficiency promotion, scores, streaks, or persisted progress.",
     "turnSignal is advisory for the next UI/orchestration decision only. objective 'appears_achieved' means the current supplied dialogue appears to satisfy the scenario objective; it is not authoritative learner progress.",
