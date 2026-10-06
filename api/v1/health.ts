@@ -19,7 +19,7 @@ export default function handler(
   response.status(200).json({
     status: "ok",
     service: "thiepn/ai",
-    phase: "P7",
+    phase: "P8-integration",
     model: LUNA_MODEL
   });
 }
