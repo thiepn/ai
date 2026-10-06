@@ -17,6 +17,7 @@ import {
 import { buildLiveEvalReport } from "./report.js";
 import { P7_EVAL_THRESHOLDS } from "./thresholds.js";
 import type {
+  EvalGrade,
   LanguageEvalCase,
   LiveEvalCaseResult
 } from "./types.js";
@@ -145,7 +146,7 @@ async function runCase(
 
     let semanticValid = false;
     let semanticIssue: string | undefined;
-    let grade = {
+    let grade: EvalGrade = {
       score: 0,
       passedWeight: 0,
       totalWeight: 0,
