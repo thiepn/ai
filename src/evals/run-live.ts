@@ -243,10 +243,13 @@ async function main(): Promise<void> {
     );
   }
 
-  const cases = selectLanguageEvalCases({
-    suite: parseSuite(),
-    limit: parseLimit()
-  });
+  const suite = parseSuite();
+  const limit = parseLimit();
+  const cases = selectLanguageEvalCases(
+    limit === undefined
+      ? { suite }
+      : { suite, limit }
+  );
 
   if (cases.length === 0) {
     throw new Error(
