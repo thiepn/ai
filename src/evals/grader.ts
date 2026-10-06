@@ -224,7 +224,7 @@ function promptLeaksAnswer(
     .trim()
     .toLocaleLowerCase();
 
-  if (normalizedAnswer.length < 3) {
+  if (normalizedAnswer.length === 0) {
     return false;
   }
 
