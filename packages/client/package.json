@@ -1,7 +1,7 @@
 {
   "name": "@thiepn/ai",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "description": "Server-side client SDK for the Thiepn AI service",
   "type": "module",
   "engines": {
@@ -21,5 +21,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.build.json --noEmit"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
