@@ -392,7 +392,7 @@ export const languageEvalCases: readonly LanguageEvalCase[] = [
     expect: {
       maxErrors: 0,
       supportHint: "null",
-      objective: "progressing",
+      objective: "not_yet",
       replyMustNotContain: [
         "In English",
         "English:"
@@ -426,7 +426,8 @@ export const languageEvalCases: readonly LanguageEvalCase[] = [
     },
     expect: {
       maxErrors: 2,
-      supportHint: "any"
+      supportHint: "any",
+      requiredErrorCategories: ["grammar"]
     },
     manualReview: [
       "Feedback should not overwhelm the conversational reply.",
@@ -464,7 +465,7 @@ export const languageEvalCases: readonly LanguageEvalCase[] = [
     expect: {
       maxErrors: 0,
       supportHint: "null",
-      objective: "progressing",
+      objective: "not_yet",
       replyMustContainAny: [
         "水",
         "こちら",
