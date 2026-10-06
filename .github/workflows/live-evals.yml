@@ -1,0 +1,63 @@
+name: Live AI Evals
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Language subset
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - french
+          - japanese
+      limit:
+        description: Optional maximum number of cases (blank = all selected)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      THIEPN_AI_LIVE_EVAL_ACK: "yes"
+      EVAL_SUITE: ${{ inputs.suite }}
+      EVAL_LIMIT: ${{ inputs.limit }}
+      EVAL_OUTPUT_PATH: artifacts/evals/live-report.json
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Require live-eval credential
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "OPENAI_API_KEY GitHub Actions secret is not configured."
+            exit 1
+          fi
+
+      - name: Install
+        run: npm install
+
+      - name: Run live eval gate
+        run: npm run eval:live
+
+      - name: Upload eval report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: thiepn-ai-live-eval
+          path: artifacts/evals/live-report.json
+          if-no-files-found: warn
