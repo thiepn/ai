@@ -156,6 +156,64 @@ describe("languages.generateExercise", () => {
     );
   });
 
+  it("rejects semantic drift beyond requested targets and types", async () => {
+    const runModel = modelResult({
+      title: "Practice",
+      learnerInstructions: "Answer the item.",
+      exercises: [
+        {
+          id: "x1",
+          type: "translation",
+          prompt: "Translate: Yesterday I studied.",
+          choices: null,
+          expectedAnswer: "Hier, j'ai étudié.",
+          acceptedAnswers: [],
+          explanation:
+            "Use the passé composé for a completed past action.",
+          targetSkillIds: ["invented-skill"],
+          categories: ["tense_aspect"],
+          difficulty: "on_level"
+        }
+      ]
+    });
+
+    const result = await executeRun(
+      {
+        capability: "languages.generateExercise",
+        input: {
+          languageId: "french",
+          proficiency: {
+            framework: "cefr",
+            level: "A2"
+          },
+          targets: {
+            skillIds: ["sentence-transfer"],
+            correctionCategories: [
+              "tense_aspect"
+            ]
+          },
+          count: 1,
+          exerciseTypes: ["translation"]
+        }
+      },
+      { appId: "languages" },
+      {
+        runModel,
+        registry: capabilityRegistry,
+        guardrails: guardrails()
+      }
+    );
+
+    expect(result.status).toBe(502);
+    expect(result.body.ok).toBe(false);
+
+    if (!result.body.ok) {
+      expect(result.body.error.code).toBe(
+        "INVALID_MODEL_OUTPUT"
+      );
+    }
+  });
+
   it("is restricted to the Languages app identity", async () => {
     const runModel = modelResult({
       title: "Practice",
