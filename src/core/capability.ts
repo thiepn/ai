@@ -23,6 +23,10 @@ export type CapabilityDefinition<I = unknown, O = unknown> = {
   };
   allowedApps: readonly string[];
   buildPrompt(input: I): CapabilityPrompt;
+  validateOutput?(
+    input: I,
+    output: O
+  ): string | undefined;
 };
 
 function assertPositiveInteger(
