@@ -13,6 +13,7 @@ function testCapability(id: string) {
     outputName: id.replace(".", "_"),
     reasoning: "low",
     limits: {
+      maxInputTokens: 1_024,
       maxOutputTokens: 100
     },
     allowedApps: ["internal"],
@@ -53,12 +54,38 @@ describe("CapabilityRegistry", () => {
         outputSchema: z.object({}),
         outputName: "bad",
         reasoning: "low",
-        limits: { maxOutputTokens: 1 },
+        limits: {
+          maxInputTokens: 1,
+          maxOutputTokens: 1
+        },
         allowedApps: ["internal"],
         buildPrompt() {
           return { instructions: "", input: "" };
         }
       })
     ).toThrow("Invalid capability id");
+  });
+
+  it("rejects invalid rate ceilings", () => {
+    expect(() =>
+      defineCapability({
+        id: "core.bad-rate",
+        version: 1,
+        description: "Bad rate",
+        inputSchema: z.object({}),
+        outputSchema: z.object({}),
+        outputName: "core_bad_rate",
+        reasoning: "low",
+        limits: {
+          maxInputTokens: 1,
+          maxOutputTokens: 1,
+          requestsPerMinute: 0
+        },
+        allowedApps: ["internal"],
+        buildPrompt() {
+          return { instructions: "", input: "" };
+        }
+      })
+    ).toThrow("Invalid requestsPerMinute");
   });
 });
