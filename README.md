@@ -6,9 +6,9 @@ Shared AI infrastructure for the Thiepn ecosystem.
 
 ## Current status
 
-**P1 implemented.** The repository now contains the minimal GPT-6 Luna execution service, a gated internal smoke capability, stable v1 routes, normalized errors, and unit-testable core execution.
+**P2 implemented.** The repository now contains a registry-driven capability platform with per-capability input/output schemas, strict GPT-6 Luna structured outputs, normalized execution, and a gated internal proving capability.
 
-P0 architecture remains authoritative; P2 will replace the temporary smoke dispatch with the real capability registry.
+P0 architecture remains authoritative; P3 adds authenticated caller identity, permission enforcement, and budgets.
 
 ## Core principles
 
@@ -64,6 +64,7 @@ Only after that pilot is stable should Recipe, StudyOS, Diet, Selah, or cross-ap
 - [Data and context rules](docs/data-context.md)
 - [P0 acceptance criteria](docs/p0-acceptance.md)
 - [P1 implementation](docs/p1-implementation.md)
+- [P2 implementation](docs/p2-implementation.md)
 - [Architecture decisions](docs/adr/)
 
 ## Phase roadmap
