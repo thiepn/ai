@@ -1,32 +1,38 @@
-import type { SmokeInput } from "../core/contracts.js";
-import type { LunaRequest, LunaResult } from "../providers/luna.js";
+import { z } from "zod";
+import { defineCapability } from "../core/capability.js";
 
-export const CORE_SMOKE_CAPABILITY = {
+export const coreSmokeInputSchema = z.object({
+  text: z.string().trim().min(1).max(2_000)
+}).strict();
+
+export const coreSmokeOutputSchema = z.object({
+  reply: z.string().trim().min(1).max(500)
+}).strict();
+
+export const coreSmokeCapability = defineCapability({
   id: "core.smoke",
   version: 1,
-  maxOutputTokens: 160
-} as const;
+  description: "Internal structured-output smoke test for the shared AI execution path.",
+  inputSchema: coreSmokeInputSchema,
+  outputSchema: coreSmokeOutputSchema,
+  outputName: "core_smoke",
+  reasoning: "low",
+  limits: {
+    maxOutputTokens: 160
+  },
+  allowedApps: ["internal"],
+  buildPrompt(input) {
+    return {
+      instructions: [
+        "You are the internal smoke-test capability for thiepn/ai.",
+        "Reply briefly and directly to the supplied text.",
+        "Return only the structured response requested by the output schema.",
+        "Do not call tools, browse, or claim access to application data."
+      ].join(" "),
+      input: input.text
+    };
+  }
+});
 
-export type CoreSmokeResult = {
-  reply: string;
-};
-
-export async function runCoreSmoke(
-  input: SmokeInput,
-  runModel: (request: LunaRequest) => Promise<LunaResult>
-): Promise<CoreSmokeResult> {
-  const result = await runModel({
-    instructions: [
-      "You are the internal smoke-test capability for thiepn/ai.",
-      "Reply briefly and directly to the supplied text.",
-      "Do not call tools, browse, or claim access to application data."
-    ].join(" "),
-    input: input.text,
-    reasoning: "low",
-    maxOutputTokens: CORE_SMOKE_CAPABILITY.maxOutputTokens
-  });
-
-  return {
-    reply: result.text
-  };
-}
+export type CoreSmokeInput = z.infer<typeof coreSmokeInputSchema>;
+export type CoreSmokeOutput = z.infer<typeof coreSmokeOutputSchema>;
