@@ -16,11 +16,27 @@ export type CapabilityDefinition<I = unknown, O = unknown> = {
   outputName: string;
   reasoning: CapabilityReasoning;
   limits: {
+    maxInputTokens: number;
     maxOutputTokens: number;
+    requestsPerMinute?: number;
+    requestsPerDay?: number;
   };
   allowedApps: readonly string[];
   buildPrompt(input: I): CapabilityPrompt;
 };
+
+function assertPositiveInteger(
+  value: number | undefined,
+  name: string,
+  capabilityId: string
+): void {
+  if (
+    value !== undefined &&
+    (!Number.isInteger(value) || value < 1)
+  ) {
+    throw new Error(`Invalid ${name} for ${capabilityId}`);
+  }
+}
 
 export function defineCapability<I, O>(
   definition: CapabilityDefinition<I, O>
@@ -37,15 +53,31 @@ export function defineCapability<I, O>(
     throw new Error(`Invalid capability version for ${definition.id}`);
   }
 
-  if (
-    !Number.isInteger(definition.limits.maxOutputTokens) ||
-    definition.limits.maxOutputTokens < 1
-  ) {
-    throw new Error(`Invalid maxOutputTokens for ${definition.id}`);
-  }
+  assertPositiveInteger(
+    definition.limits.maxInputTokens,
+    "maxInputTokens",
+    definition.id
+  );
+  assertPositiveInteger(
+    definition.limits.maxOutputTokens,
+    "maxOutputTokens",
+    definition.id
+  );
+  assertPositiveInteger(
+    definition.limits.requestsPerMinute,
+    "requestsPerMinute",
+    definition.id
+  );
+  assertPositiveInteger(
+    definition.limits.requestsPerDay,
+    "requestsPerDay",
+    definition.id
+  );
 
   if (definition.allowedApps.length === 0) {
-    throw new Error(`Capability ${definition.id} must declare at least one intended caller`);
+    throw new Error(
+      `Capability ${definition.id} must declare at least one intended caller`
+    );
   }
 
   return definition;
