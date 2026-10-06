@@ -3,11 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "build:client": "npm run build --workspace=@thiepn/ai",
+    "typecheck": "tsc --noEmit && npm run typecheck --workspace=@thiepn/ai",
     "test": "vitest run",
     "test:watch": "vitest"
   },
