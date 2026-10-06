@@ -4,14 +4,14 @@ export const smokeInputSchema = z.object({
   text: z.string().trim().min(1).max(2_000)
 }).strict();
 
-export const runRequestSchema = z.object({
-  capability: z.literal("core.smoke"),
-  input: smokeInputSchema,
+export const runEnvelopeSchema = z.object({
+  capability: z.string().trim().min(1).max(128),
+  input: z.unknown(),
   requestId: z.string().trim().min(1).max(128).optional()
 }).strict();
 
 export type SmokeInput = z.infer<typeof smokeInputSchema>;
-export type RunRequest = z.infer<typeof runRequestSchema>;
+export type RunEnvelope = z.infer<typeof runEnvelopeSchema>;
 
 export type ErrorCode =
   | "UNAUTHORIZED"
