@@ -249,3 +249,27 @@ Full Core repository DB bootstrap  BLOCKED by pre-existing Recipe migration
 ```
 
 For P8 purposes, the Languages AI integration layer is code-qualified. This does not satisfy Layer B live certification.
+
+
+## Live model qualification — PASS
+
+The complete 18-case P7 suite has now been executed against the production-configured GPT-6 Luna service.
+
+Results:
+
+```text
+18 / 18 cases passed
+schema validity        100%
+semantic validity      100%
+critical pass rate     100%
+overall score          0.9887766554
+total model cost       $0.0032226
+average latency        ~3.5 s
+p95 latency            6.33 s
+```
+
+One real conversation-feedback defect was discovered, fixed, regression-tested, and requalified.
+
+See [P8 Live Luna Qualification — 2026-10-07](p8-live-eval-2026-10-07.md).
+
+The remaining P8 exit item is the signed-in learner/browser acceptance path.
