@@ -36,3 +36,8 @@ AI is optional. Finance should use its deterministic P19 parser as the zero-cost
 ## Authority
 
 Finance remains authoritative for every calculation and every record. Luna may interpret language; it may not calculate spending, budgets, net worth, product prices, or receipt state.
+
+
+## Production app identity
+
+Finance uses a dedicated server-only `THIEPN_AI_FINANCE_SECRET`. The AI service merges that credential into its runtime app-auth map without rewriting `THIEPN_AI_APP_SECRETS_JSON`, so existing Languages authentication remains untouched. Core must hold the same Finance secret when signing `appId=finance` requests.
