@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   authenticateAppRequest,
+  loadAppSecrets,
   signAppRequest
 } from "../src/security/app-auth.js";
 import { MemoryGuardrailStore } from "../src/guardrails/memory-store.js";
@@ -35,6 +36,29 @@ function signedHeaders(
 }
 
 describe("application authentication", () => {
+  it("merges an isolated Finance secret without rewriting the shared map", () => {
+    const financeSecret = "fedcba9876543210fedcba9876543210";
+    const secrets = loadAppSecrets(
+      JSON.stringify({ internal: secret, languages: secret }),
+      financeSecret
+    );
+
+    expect(secrets).toEqual({
+      internal: secret,
+      languages: secret,
+      finance: financeSecret
+    });
+  });
+
+  it("rejects an invalid isolated Finance secret", () => {
+    expect(() =>
+      loadAppSecrets(
+        JSON.stringify({ internal: secret }),
+        "too-short"
+      )
+    ).toThrow();
+  });
+
   it("accepts a valid signed request", async () => {
     const store = new MemoryGuardrailStore(() => nowMs);
     const nonce = "nonce_1234567890abcdef";
