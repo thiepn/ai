@@ -6,7 +6,7 @@ THIEPN Finance uses `thiepn/ai` only as an optional natural-language interpretat
 
 ```text
 Finance browser
-  -> THIEPN Account bearer token
+  -> authenticated Finance session
   -> THIEPN Core
   -> signed request as appId=finance
   -> finance.interpretQuestion
@@ -31,7 +31,7 @@ Merchant, category, and product names are deliberately not model-resolved. Finan
 
 ## Failure rule
 
-AI is optional. If Core, the AI service, Luna, rate limits, or the Finance app secret are unavailable, Finance must fall back to its existing deterministic P19 parser. The Finance product remains usable without ChatGPT, ChatGPT Pro, or an available model call.
+AI is optional. Finance should use its deterministic P19 parser as the zero-cost fast path and invoke this capability only when natural-language interpretation is needed. If Core, the AI service, Luna, rate limits, or the Finance app secret are unavailable, existing deterministic P19 questions remain functional. The Finance product remains usable without ChatGPT, ChatGPT Pro, or an available model call.
 
 ## Authority
 
