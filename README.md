@@ -6,7 +6,7 @@ Shared AI infrastructure for the Thiepn ecosystem.
 
 ## Current status
 
-**P8 integration implemented; live certification pending.** The Languages pilot is wired through the authenticated THIEPN Core boundary with a browser-safe Languages client and explicit production qualification gates. Live GPT-6 Luna certification still requires production credentials/deployment, the full P7 live eval, and a signed-in human study session.
+**P9 Finance expansion implemented in code; activation pending.** The Languages pilot remains the first qualified product path, and Finance now adds a second narrow capability: `finance.interpretQuestion`. Finance sends only the question and current date to Luna; all money, records, entity resolution, and calculations remain in the deterministic Finance product. Production activation requires a separate `finance` app HMAC secret to be configured in both THIEPN Core and the AI service.
 
 P0 architecture remains authoritative. Until those live gates pass, the truthful state is `integration-ready`, not `production-certified`.
 
@@ -87,5 +87,6 @@ Only after that pilot is stable should Recipe, StudyOS, Diet, Selah, or cross-ap
 | P6 | Languages exercises + conversation |
 | P7 | Evaluation suite + reliability hardening |
 | P8 | Real-world Languages qualification |
-| P9+ | Expansion only if P0-P8 prove useful |
+| P9 | Finance natural-language interpretation with deterministic fallback |
+| P10+ | Further expansion only when a real product need justifies it |
 

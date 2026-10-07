@@ -74,6 +74,30 @@ export type LanguageConversationHistoryMessage = {
   text: string;
 };
 
+export type FinanceIntent =
+  | "spending"
+  | "top_spending"
+  | "cash_flow"
+  | "product_prices"
+  | "recurring"
+  | "budget"
+  | "net_worth"
+  | "receipt_reconciliation";
+
+export type FinancePeriodKind = "week" | "month" | "quarter" | "year";
+
+export type FinanceDimension =
+  | "category"
+  | "merchant"
+  | "necessity"
+  | "product";
+
+export type FinanceNecessity =
+  | "essential"
+  | "flexible"
+  | "discretionary"
+  | "unclassified";
+
 export interface ThiepnAICapabilityMap {
   "core.smoke": {
     input: {
@@ -198,6 +222,24 @@ export interface ThiepnAICapabilityMap {
           | "appears_achieved";
         rationale: string;
       };
+    };
+  };
+  "finance.interpretQuestion": {
+    input: {
+      question: string;
+      today: string;
+    };
+    output: {
+      status: "parsed" | "unsupported";
+      intent: FinanceIntent | null;
+      period: {
+        kind: FinancePeriodKind;
+        anchorDate: string;
+        label: string;
+      } | null;
+      dimension: FinanceDimension | null;
+      necessity: FinanceNecessity | null;
+      reason: string | null;
     };
   };
 }
