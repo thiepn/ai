@@ -35,7 +35,8 @@ function firstHeader(headers: RequestHeaders, name: string): string | undefined 
 }
 
 export function loadAppSecrets(
-  raw = process.env.THIEPN_AI_APP_SECRETS_JSON
+  raw = process.env.THIEPN_AI_APP_SECRETS_JSON,
+  financeSecret = process.env.THIEPN_AI_FINANCE_SECRET
 ): Readonly<Record<string, string>> {
   if (!raw) {
     throw new AiServiceError(
@@ -47,7 +48,12 @@ export function loadAppSecrets(
 
   try {
     const parsedJson: unknown = JSON.parse(raw);
-    return secretMapSchema.parse(parsedJson);
+    const secrets = secretMapSchema.parse(parsedJson);
+    const finance = financeSecret?.trim();
+
+    return finance
+      ? secretMapSchema.parse({ ...secrets, finance })
+      : secrets;
   } catch (error) {
     throw new AiServiceError(
       "INTERNAL_ERROR",
