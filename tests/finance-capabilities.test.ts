@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { GuardrailManager } from "../src/guardrails/manager.js";
+import { MemoryGuardrailStore } from "../src/guardrails/memory-store.js";
 import { capabilityRegistry } from "../src/capabilities/index.js";
 import {
   financeInterpretQuestionCapability,
@@ -27,6 +29,32 @@ describe("finance.interpretQuestion", () => {
         today: "2026-10-07"
       }).success
     ).toBe(false);
+  });
+
+  it("allows valid Finance questions under the conservative prompt-byte guardrail", async () => {
+    const now = new Date("2026-10-08T12:00:00Z");
+    const store = new MemoryGuardrailStore(() => now.getTime());
+    const guardrails = new GuardrailManager(store, { now: () => now });
+
+    for (const question of [
+      "Was habe ich letzten Monat ausgegeben?",
+      "가".repeat(1_000)
+    ]) {
+      const input = financeInterpretQuestionInputSchema.parse({
+        question,
+        today: "2026-10-08"
+      });
+      const prompt = financeInterpretQuestionCapability.buildPrompt(input);
+      const reservation = await guardrails.beforeModelCall({
+        appId: "finance",
+        capability: financeInterpretQuestionCapability,
+        instructions: prompt.instructions,
+        input: prompt.input
+      });
+
+      expect(reservation.appId).toBe("finance");
+      await guardrails.releaseReservation(reservation);
+    }
   });
 
   it("accepts a safe executable interpretation", () => {

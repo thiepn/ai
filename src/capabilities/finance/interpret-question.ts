@@ -88,7 +88,7 @@ export const financeInterpretQuestionCapability = defineCapability<Input, Output
   outputName: "finance_interpret_question",
   reasoning: "low",
   limits: {
-    maxInputTokens: 700,
+    maxInputTokens: 6_144,
     maxOutputTokens: 350,
     requestsPerMinute: 30,
     requestsPerDay: 500
