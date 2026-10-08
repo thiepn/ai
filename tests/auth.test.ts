@@ -50,6 +50,23 @@ describe("application authentication", () => {
     });
   });
 
+  it("merges an independent Recipe secret without affecting Languages or Finance", () => {
+    const finance = "fedcba9876543210fedcba9876543210";
+    const recipe = "1234567890abcdef1234567890abcdef";
+    const secrets = loadAppSecrets(
+      JSON.stringify({internal:secret,languages:secret}),
+      finance,
+      recipe
+    );
+    expect(secrets).toEqual({
+      internal:secret,languages:secret,finance,recipe
+    });
+  });
+
+  it("rejects short Recipe-only secrets rather than silently disabling auth", () => {
+    expect(() => loadAppSecrets(JSON.stringify({internal:secret}),undefined,"short")).toThrow();
+  });
+
   it("rejects an invalid isolated Finance secret", () => {
     expect(() =>
       loadAppSecrets(
