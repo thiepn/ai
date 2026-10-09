@@ -37,7 +37,8 @@ function firstHeader(headers: RequestHeaders, name: string): string | undefined 
 export function loadAppSecrets(
   raw = process.env.THIEPN_AI_APP_SECRETS_JSON,
   financeSecret = process.env.THIEPN_AI_FINANCE_SECRET,
-  recipeSecret = process.env.THIEPN_AI_RECIPE_SECRET
+  recipeSecret = process.env.THIEPN_AI_RECIPE_SECRET,
+  pdfSecret = process.env.THIEPN_AI_PDF_SECRET
 ): Readonly<Record<string, string>> {
   if (!raw) {
     throw new AiServiceError(
@@ -52,11 +53,13 @@ export function loadAppSecrets(
     const secrets = secretMapSchema.parse(parsedJson);
     const finance = financeSecret?.trim();
     const recipe = recipeSecret?.trim();
+    const pdf = pdfSecret?.trim();
 
     return secretMapSchema.parse({
       ...secrets,
       ...(finance ? { finance } : {}),
-      ...(recipe ? { recipe } : {})
+      ...(recipe ? { recipe } : {}),
+      ...(pdf ? { pdf } : {})
     });
   } catch (error) {
     throw new AiServiceError(
