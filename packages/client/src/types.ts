@@ -224,6 +224,16 @@ export interface ThiepnAICapabilityMap {
       };
     };
   };
+  "pdf.planWorkflow": {
+    input: { goal: string };
+    output: {
+      schemaVersion: 1;
+      title: string;
+      rationale: string;
+      actions: Array<{ actionId: string; paramsJson: string }>;
+      notes: string[];
+    };
+  };
   "finance.interpretQuestion": {
     input: {
       question: string;
