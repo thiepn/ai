@@ -1,0 +1,26 @@
+name: F8 PDF Luna capability
+on:
+  pull_request:
+    paths:
+      - "src/capabilities/pdf/**"
+      - "src/capabilities/index.ts"
+      - "src/security/app-auth.ts"
+      - "packages/client/src/types.ts"
+      - "tests/pdf-planning.test.ts"
+      - ".github/workflows/f8-pdf-planning.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run typecheck
+      - run: npx vitest run tests/pdf-planning.test.ts tests/auth.test.ts tests/registry.test.ts
+      - run: npm run build:client
