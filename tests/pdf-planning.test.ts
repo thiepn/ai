@@ -39,7 +39,7 @@ describe("F8 PDF Luna capability",()=>{
     expect(pdfPlanWorkflowCapability.validateOutput?.({goal:"export"},output)).toMatch(/last action/);
   });
   it("rejects AI outputs with approval flags or non-JSON params",()=>{
-    expect(pdfPlanWorkflowCapability.outputSchema.safeParse(example([{actionId:"pdf.optimize",paramsJson:"{}",approvedRisks:["metadata-removal"]}])).success).toBe(false);
+    expect(pdfPlanWorkflowCapability.outputSchema.safeParse(example([{actionId:"pdf.optimize",paramsJson:"{}",approvedRisks:["metadata-removal"]} as any])).success).toBe(false);
     expect(()=>normalizePdfPlan(example([{actionId:"pdf.optimize",paramsJson:"not-json"}]))).toThrow(/Invalid JSON/);
     expect(()=>normalizePdfPlan(example([{actionId:"pdf.metadata.remove",paramsJson:'{"shell":"run"}'}]))).toThrow(/Unsupported/);
   });
